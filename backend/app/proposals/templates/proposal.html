@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+            font-size: 12px;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin: 0 0 8px 0;
+        }
+
+        h2 {
+            font-size: 14px;
+            margin: 16px 0 6px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        .k {
+            color: #555;
+            width: 180px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Investment Risk Proposal</h1>
+    <div><span class="k">Client</span> {{ client_name }}</div>
+    <div><span class="k">Portfolio</span> {{ portfolio_name }}</div>
+    <div><span class="k">As-of</span> {{ as_of }}</div>
+
+    <h2>Positions</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Weight</th>
+                <th>Kind</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in positions %}
+            <tr>
+                <td>{{ p.ticker }}</td>
+                <td>{{ "%.2f"|format(p.weight * 100) }}%</td>
+                <td>{{ p.kind }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Risk Summary</h2>
+    <table>
+        <tbody>
+            <tr>
+                <td class="k">Risk score</td>
+                <td>{{ "%.1f"|format(risk.risk_score) }}</td>
+            </tr>
+            <tr>
+                <td class="k">Ann. volatility</td>
+                <td>{{ "%.1f"|format(risk.vol_annual * 100) }}%</td>
+            </tr>
+            <tr>
+                <td class="k">Max drawdown (hist)</td>
+                <td>{{ "%.1f"|format(risk.max_drawdown * 100) }}%</td>
+            </tr>
+            <tr>
+                <td class="k">Downside vol</td>
+                <td>{{ "%.1f"|format(risk.downside_vol_annual * 100) }}%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Monte Carlo (bootstrap)</h2>
+    <table>
+        <tbody>
+            <tr>
+                <td class="k">Horizon</td>
+                <td>{{ mc.horizon_years }} years</td>
+            </tr>
+            <tr>
+                <td class="k">Paths</td>
+                <td>{{ mc.n_paths }}</td>
+            </tr>
+            <tr>
+                <td class="k">Terminal p10/p50/p90</td>
+                <td>{{ "%.2f"|format(mc.p10_terminal) }} / {{ "%.2f"|format(mc.p50_terminal) }} / {{
+                    "%.2f"|format(mc.p90_terminal) }}</td>
+            </tr>
+            <tr>
+                <td class="k">Prob. shortfall</td>
+                <td>{{ "%.1f"|format(mc.prob_shortfall * 100) }}%</td>
+            </tr>
+            <tr>
+                <td class="k">Worst drawdown p05</td>
+                <td>{{ "%.1f"|format(mc.worst_path_drawdown_p05 * 100) }}%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Assumptions</h2>
+    <pre>{{ assumptions | tojson(indent=2) }}</pre>
+</body>
+
+</html>
