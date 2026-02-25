@@ -13,20 +13,20 @@ services:
     ports: [ "6379:6379" ]
 
   backend:
-    build: ./backend
+    build: .
     env_file: .env
     depends_on: [ db, redis ]
     expose: [ "8000" ]
     command: [ "bash", "-lc", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000" ]
 
   worker:
-    build: ./backend
+    build: .
     env_file: .env
     depends_on: [ db, redis ]
     command: [ "bash", "-lc", "celery -A app.tasks.celery_app.celery worker -l info" ]
 
   beat:
-    build: ./backend
+    build: .
     env_file: .env
     depends_on: [ db, redis ]
     command: [ "bash", "-lc", "celery -A app.tasks.celery_app.celery beat -l info" ]
